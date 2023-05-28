@@ -15,6 +15,7 @@ class sql():
                                            port=PORT,
                                            auth_plugin=AUTH_PLUGIN)
         self.cur = self.con.cursor()
+        self.sec_lvl = SECURITY_LVL
 
     def insertUser(self, user):
         self.rows = self.cur.execute("insert into users (user_email, user_password, user_salt) values(%s, %s, %s)", (user.email, user.password, user.salt.hex()))
@@ -54,7 +55,7 @@ class sql():
             )
         return allClients
 
-    def insertclient(self, client):
+    def insertClient(self, client):
         mySql_insert_query = "insert into clients" \
                              "(client_id, client_first_name, client_last_name, client_phone, client_email)" \
                              "values('" + client.id + "', '" + client.first_name + "', '" + client.last_name +\

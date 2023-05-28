@@ -7,7 +7,7 @@ sql = sql()
 
 
 def add_client(client):
-    sql.insertclient(client)
+    sql.insertClient(client)
     return jsonify({}),200
 
 def all_clients():

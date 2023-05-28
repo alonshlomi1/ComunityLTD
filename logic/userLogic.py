@@ -1,4 +1,5 @@
 import hashlib
+from flask_mail import Mail, Message
 import os
 import re
 
