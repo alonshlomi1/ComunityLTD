@@ -1,5 +1,5 @@
 import hashlib
-from flask_mail import Mail, Message
+from logic import send_email
 import os
 import re
 
@@ -45,8 +45,9 @@ def forget_password(user):
     data = sql.getUserByEmail(user)
     if data is None:
         return error("Unauthorized", 401)
+    # TODO: gen random pass and use SHA-1
     new_pass = "1234567890"
-    # TODO: send email with new password
+    send_email.send_new_password_email(user.email, new_pass)
     user.salt = os.urandom(32)
     user.password = hash_password(user.salt, new_pass)
     sql.update_user(user)
