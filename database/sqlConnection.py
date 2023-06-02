@@ -1,19 +1,22 @@
 import mysql.connector
 from logic.client import Client
 from con_data import *
+from os import getenv
 
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class sql():
     rows = None
 
     def __init__(self):
-        self.con = mysql.connector.connect(host=HOST,
-                                           user=USER,
-                                           password=PASSWORD,
-                                           database=DATABASE,
-                                           port=PORT,
-                                           auth_plugin=AUTH_PLUGIN)
+        self.con = mysql.connector.connect(host=getenv("HOST"),
+                                           user=getenv("USER"),
+                                           password=getenv("PASSWORD"),
+                                           database=getenv("DATABASE"),
+                                           port=getenv("PORT"),
+                                           auth_plugin=getenv("AUTH_PLUGIN"))
         self.cur = self.con.cursor()
         self.sec_lvl = SECURITY_LVL
 

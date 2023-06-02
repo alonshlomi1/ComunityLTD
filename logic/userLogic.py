@@ -56,7 +56,6 @@ def forget_password(user):
 
 def change_password(user, new_password):
     data = sql.getUserByEmail(user)
-    print(user.email)
     if not data:
         return error("Unauthorized", 401)
     user_db = User(data[0], data[1], bytes.fromhex(data[2]))
