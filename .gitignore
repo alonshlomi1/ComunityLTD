@@ -1,7 +1,8 @@
 .flaskenv
 .env
-certificate.crt
-private.key
+cert.pem
+cer.crt
+key.pem
 
 __pycache__/
 con_data.py

@@ -1,3 +1,6 @@
+import ssl
+import sys
+
 from flask import Flask, request
 from flask_sslify import SSLify
 
@@ -20,7 +23,7 @@ CORS(app)
 @app.route('/login', methods=['POST'])
 def get_current_user():
     data = request.get_json()
-    return login(User(bleach.clean(data['email']), bleach.clean(data['password'])))
+    return login(User(data['email'], bleach.clean(data['password'])))
 
 
 @app.route('/submitNewUser', methods=['POST'])
@@ -60,16 +63,17 @@ def add_new_client():
 
 
 if __name__ == '__main__':
-    context = SSL.Context(SSL.PROTOCOL_TLSv1_2)
-    # context.use_privatekey_file('./private.key')
-    # context.use_certificate_file('./certificate.crt')
-    app.run(host='127.0.0.1', debug=True, port=500, ssl_context=context)
 
-    """
-    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    context.load_cert_chain('./certificate.crt', './private.key')
-    app.run(host='127.0.0.1', port=5000, ssl_context=context)
-    """
+    #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    context.maximum_version = ssl.TLSVersion.TLSv1_3
+    context.load_cert_chain("cert.pem", "key.pem")
+    app.run(host='127.0.0.1', port=5000, debug=True, ssl_context=context)
+
+
+
+
     """
     Open a new tab in Google Chrome and enter chrome://flags in the address bar.
     Search for the flag called "Allow invalid certificates for resources loaded from localhost."
