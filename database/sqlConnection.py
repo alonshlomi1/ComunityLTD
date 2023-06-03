@@ -4,6 +4,7 @@ from con_data import *
 from os import getenv
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -21,30 +22,31 @@ class sql():
         self.sec_lvl = SECURITY_LVL
 
     def insertUser(self, user):
-        self.rows = self.cur.execute("insert into users (user_email, user_password, user_salt) values(%s, %s, %s)", (user.email, user.password, user.salt.hex()))
+        self.rows = self.cur.execute("insert into users (user_email, user_password, user_salt) values(%s, %s, %s)",
+                                     (user.email, user.password, user.salt.hex()))
         self.con.commit()
 
-
     def isValidUser(self, user):
-        mySql_select_query = "select * from users where " + "user_email ='" + user.email + "';"
-        self.cur.execute(mySql_select_query)
+     #   mySql_select_query = "select * from users where " + "user_email ='" + user.email + "';"
+     #   self.cur.execute(mySql_select_query)
+        self.rows = self.cur.execute("select * from users where user_email = %s ;", (user.email,))
         rows = self.cur.fetchall()
         for r in rows:
             return True
         return False
 
-
     def getUserByEmail(self, user):
-        mySql_select_query = "select * from users where " + "user_email ='" + user.email + "';"
-        self.cur.execute(mySql_select_query)
+        #mySql_select_query = "select * from users where " + "user_email ='" + user.email + "';"
+        #self.cur.execute(mySql_select_query)
+        self.rows = self.cur.execute("select * from users where user_email = %s ;", (user.email,))
         data = self.cur.fetchone()
         if data:
             return data
         return False
 
-
     def update_user(self, user):
-        self.rows = self.cur.execute("update users set user_password = %s ,user_salt = %s  where user_email = %s;",(user.password, user.salt.hex(), user.email))
+        self.rows = self.cur.execute("update users set user_password = %s ,user_salt = %s  where user_email = %s;",
+                                     (user.password, user.salt.hex(), user.email))
         self.con.commit()
 
     def getAllClients(self):
@@ -59,9 +61,13 @@ class sql():
         return allClients
 
     def insertClient(self, client):
-        mySql_insert_query = "insert into clients" \
-                             "(client_id, client_first_name, client_last_name, client_phone, client_email)" \
-                             "values('" + client.id + "', '" + client.first_name + "', '" + client.last_name +\
-                             "', '" + client.phone + "', '" + client.email + "');"
-        self.rows = self.cur.execute(mySql_insert_query)
+        self.rows = self.cur.execute("insert into clients (client_id, client_first_name, client_last_name, "
+                                     "client_phone, client_email) values(%s, %s, %s, %s, %s)", (client.id,
+                                                                                                client.first_name,
+                                                                                                client.last_name,
+                                                                                                client.phone,
+                                                                                                client.email))
         self.con.commit()
+# dangerouslySetInnerHTML:{"__html": "<img onerror-'alert(\"Hacked!\");' src='invalid-image' />"}
+
+# <img onerror='alert("Hacked!");' src='invalid-image' />
