@@ -2,3 +2,6 @@
 .env
 certificate.crt
 private.key
+
+__pycache__/
+con_data.py
