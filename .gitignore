@@ -1,2 +1,4 @@
-.env
 .flaskenv
+.env
+certificate.crt
+private.key

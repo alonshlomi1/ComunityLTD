@@ -1,22 +1,21 @@
 from flask import Flask, request
+from flask_sslify import SSLify
+
 from flask_cors import CORS
 from logic.user import User
 from logic.client import Client
 from logic.userLogic import *
 from logic.clientLogic import *
-
-
 from flask import Flask
 from flask_cors import CORS
+from OpenSSL import SSL
+
+import ssl
 
 app = Flask(__name__)
+sslify = SSLify(app, subdomains=True)
 CORS(app)
-"""
-if __name__ == "__main__":
-    CORS(app)
-    app.config['CORS_HEADERS'] = 'Content-Type'
-    app.run(debug=True)
-"""
+
 
 @app.route('/login', methods=['POST'])
 def get_current_user():
@@ -57,3 +56,14 @@ def add_new_client():
 
 
 
+if __name__ == '__main__':
+    context = SSL.Context(SSL.PROTOCOL_TLSv1_2)
+    context.use_privatekey_file('./private.key')
+    context.use_certificate_file('./certificate.crt')
+    app.run(host='127.0.0.1', debug=True,  port=500, ssl_context=context)
+
+    """
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.load_cert_chain('./certificate.crt', './private.key')
+    app.run(host='127.0.0.1', port=5000, ssl_context=context)
+    """
