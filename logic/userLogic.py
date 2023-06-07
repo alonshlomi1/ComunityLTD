@@ -72,9 +72,10 @@ def forget_password(user):
         return error("Unauthorized", 401)
     # TODO: gen random pass and use SHA-1
     new_pass = "1234567890"
-    send_email.send_new_password_email(user.email, new_pass)
+    sha1_hash = hashlib.sha1(new_pass.encode()).hexdigest()
+    send_email.send_new_password_email(user.email, sha1_hash)
     user.salt = os.urandom(32)
-    user.password = hash_password(user.salt, new_pass)
+    user.password = hash_password(user.salt, sha1_hash)
     sql.update_user(user)
     return ok()
 

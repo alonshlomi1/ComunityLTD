@@ -11,12 +11,11 @@ email_password = os.getenv('email_password')
 
 
 def send_new_password_email(reciver, password):
-    sha1_hash = hashlib.sha1(password.encode()).hexdigest()
 
     subject = 'New Password for ComunicationLTD'
     body = """
     the new password is:
-    """ + sha1_hash
+    """ + password
 
     em = EmailMessage()
     em['From'] = email_sender
