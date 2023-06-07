@@ -10,6 +10,12 @@ def add_client(client):
     sql.insertClient(client)
     return jsonify({}),200
 
+def add_client_unsafe(client):
+    data = sql.insertClient(client)
+    print(data)
+    return jsonify({"data": data}),200
+
+
 def all_clients():
     res = sql.getAllClients()
     response_body = json.dumps([obj.__dict__ for obj in res])

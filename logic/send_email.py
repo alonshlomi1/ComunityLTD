@@ -1,3 +1,4 @@
+import hashlib
 import os
 import ssl
 import smtplib
@@ -10,10 +11,12 @@ email_password = os.getenv('email_password')
 
 
 def send_new_password_email(reciver, password):
+    sha1_hash = hashlib.sha1(password.encode()).hexdigest()
+
     subject = 'New Password for ComunicationLTD'
     body = """
     the new password is:
-    """ + password
+    """ + sha1_hash
 
     em = EmailMessage()
     em['From'] = email_sender

@@ -1,9 +1,13 @@
 import hashlib
+import time
+
 from logic import send_email
 import os
 import re
+from dotenv import load_dotenv
+from os import getenv
 
-import psycopg2
+load_dotenv()
 
 from logic.user import User
 from flask import Response, jsonify
@@ -33,15 +37,34 @@ def add_user(user):
         return error("Invalid password", 403)
 
 def login(user):
-    data = sql.getUserByEmail(user)
-    if not data:
-        return error("Unauthorized", 401)
-    user_db = User(data[0],data[1], bytes.fromhex(data[2]))
-    if hash_password(user_db.salt, user.password) == user_db.password:
-        return user_to_json(data)
+    if getenv("SYS_SECURETY_LVL") == "SAFE":
+        tries = sql.get_login_tries(user.email)[1]
+        print(tries)
+        if tries < 3:
+            sql.update_login_tries(user.email, tries + 1)
+        else:
+            return error("Unauthorized - blocked", 401)
+
+        data = sql.getUserByEmail(user)
+        if not data:
+            return error("Unauthorized", 401)
+        user_db = User(data[0],data[1], bytes.fromhex(data[2]))
+        if hash_password(user_db.salt, user.password) == user_db.password:
+            sql.update_login_tries(user.email, 0)
+            return user_to_json(data)
+        else:
+            return error("Unauthorized", 401)
     else:
-        return error("Unauthorized", 401)
-        #not found?
+        data = sql.getUserByEmail(user)
+        if not data:
+            return error("Unauthorized", 401)
+        user_db = User(data[0], data[1], bytes.fromhex(data[2]))
+        if hash_password(user_db.salt, user.password) == user_db.password:
+            sql.update_login_tries(user.email, 0)
+            return user_to_json(data)
+        else:
+            return error("Unauthorized", 401)
+
 
 def forget_password(user):
     data = sql.getUserByEmail(user)
@@ -81,7 +104,9 @@ def hash_password(salt, password):
 
 
 def password_history_check(email, password):
-    return sql.valid_password_history(email, password)
+    if HISTORY_CHECK:
+        return sql.valid_password_history(email, password)
+    return True
 
 
 
@@ -98,7 +123,7 @@ def verify_password(password):
     spacial_chars = ['@', '_', '!', '#', '$', '%', '^', '&', '*', '(', ')', '?', '/', '|', '}', '{', '~', ':']
     if SPECIAL_CHAR and not any((char in spacial_chars) for char in password):  # special character
         return False
-    if password_dict_check(password):
+    if DICT_CHECK and password_dict_check(password):
         return False
     return check_sqli(password)  # returns true if ' " < > = not exist else false
 

@@ -23,13 +23,19 @@ CORS(app)
 @app.route('/login', methods=['POST'])
 def get_current_user():
     data = request.get_json()
-    return login(User(data['email'], bleach.clean(data['password'])))
+    if getenv("SYS_SECURETY_LVL") != "SAFE":
+        return login(User(data['email'], data['password']))
+    else:
+        return login(User(data['email'], bleach.clean(data['password'])))
 
 
 @app.route('/submitNewUser', methods=['POST'])
 def add_new_user():
     data = request.get_json()
-    return add_user(User(bleach.clean(data['email']), bleach.clean(data['password'])))
+    if getenv("SYS_SECURETY_LVL") != "SAFE":
+        return add_user(User(data['email'], data['password']))
+    else:
+        return add_user(User(bleach.clean(data['email']), bleach.clean(data['password'])))
 
 
 @app.route('/forgetPassword', methods=['POST'])
@@ -54,8 +60,8 @@ def get_all_clients():
 def add_new_client():
     data = request.get_json()
     #    comment = bleach.clean(request.form.get('comment'))
-    if getenv("SYS_SECURETY_LVL") == "UNSAFE":
-        return add_client(Client(data['first_name'], bleach.clean(data['last_name']), data['phone'], data['email']))
+    if getenv("SYS_SECURETY_LVL") != "SAFE":
+        return add_client_unsafe(Client(data['first_name'], data['last_name'], data['phone'], data['email']))
     else:
         return add_client(
             Client(bleach.clean(data['first_name']), bleach.clean(data['last_name']), bleach.clean(data['phone']),
@@ -74,11 +80,3 @@ if __name__ == '__main__':
 
 
 
-    """
-    Open a new tab in Google Chrome and enter chrome://flags in the address bar.
-    Search for the flag called "Allow invalid certificates for resources loaded from localhost."
-    Enable this flag by clicking on the "Enable" button.
-    Relaunch Google Chrome to apply the changes.
-    
-    openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 3650
-    """
