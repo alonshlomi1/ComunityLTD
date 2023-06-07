@@ -31,19 +31,21 @@ def add_user(user):
     user.salt = os.urandom(32)
     if verify_password(user.password):
         user.password = hash_password(user.salt, user.password)
-        sql.insertUser(user)
+        if not sql.insertUser(user):
+            return error("Unauthorized - email exist", 401)
         return jsonify({'data':{'email': user.email}}), 200
     else:
         return error("Invalid password", 403)
 
 def login(user):
-    if getenv("SYS_SECURETY_LVL") == "SAFE":
-        tries = sql.get_login_tries(user.email)[1]
+    if getenv("SYS_SECURITY_LVL") == "SAFE":
+        tries = sql.get_login_tries(user.email)#[1]
         print(tries)
-        if tries < 3:
-            sql.update_login_tries(user.email, tries + 1)
-        else:
-            return error("Unauthorized - blocked", 401)
+        if tries:
+            if tries[1] < 3:
+                sql.update_login_tries(user.email, tries[1] + 1)
+            else:
+                return error("Unauthorized - blocked", 401)
 
         data = sql.getUserByEmail(user)
         if not data:

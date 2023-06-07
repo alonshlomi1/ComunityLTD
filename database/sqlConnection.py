@@ -11,7 +11,6 @@ load_dotenv()
 class sql():
     rows = None
 
-
     def connect(self):
         return mysql.connector.connect(host=getenv("HOST"),
                                        user=getenv("USER"),
@@ -24,24 +23,36 @@ class sql():
         con = self.connect()
         cur = con.cursor()
 
-        if getenv("SYS_SECURETY_LVL") == "SAFE" or getenv("SYS_SECURETY_LVL") == "XSS" :
+        if getenv("SYS_SECURITY_LVL") == "SAFE" or getenv("SYS_SECURITY_LVL") == "XSS":
             self.rows = cur.execute("insert into users (user_email, user_password, user_salt) values(%s, %s, %s)",
                                     (user.email, user.password, user.salt.hex()))
             con.commit()
         else:
             mySql_query = "insert into users (user_salt, user_password, user_email) " \
-                                 "values('" + user.salt.hex() + "', '" + user.password + "', '" + user.email + "');"
-            cur.execute(mySql_query, multi=True)
+                          "values('" + user.salt.hex() + "', '" + user.password + "', '" + user.email + "');"
+            try:
+                cur.execute(mySql_query, multi=True)
+            except Exception as e:
+                print(e)
+                cur.close()
+                con.close()
+                return False
         cur.close()
         con.close()
         self.insert_tries(user)
+        return True
 
     def insert_tries(self, user):
         con = self.connect()
         cur = con.cursor()
-        self.rows = cur.execute("insert into login_tries (user_email, tries) values(%s, %s)",
+        try:
+            cur.execute("insert into login_tries (user_email, tries) values(%s, %s)",
                                 (user.email, 0,))
-        con.commit()
+            con.commit()
+        except Exception as e:
+            print(e)
+            cur.close()
+            con.close()
         cur.close()
         con.close()
 
@@ -102,19 +113,19 @@ class sql():
     def getUserByEmail(self, user):
         con = self.connect()
         cur = con.cursor()
-        if getenv("SYS_SECURETY_LVL") == "SAFE" or getenv("SYS_SECURETY_LVL") == "XSS"  :
-             self.rows = cur.execute("select * from users where user_email = %s ;", (user.email,))
+        if getenv("SYS_SECURITY_LVL") == "SAFE" or getenv("SYS_SECURITY_LVL") == "XSS":
+            self.rows = cur.execute("select * from users where user_email = %s ;", (user.email,))
         else:
             mySql_select_query = "select * from users where user_email ='" + user.email + "';"
             try:
                 cur.execute(mySql_select_query, multi=True)
             except:
                 return False
-        data = cur.fetchone()
+        data = cur.fetchall()
         cur.close()
         con.close()
         if data:
-            return data
+            return data[0]
         return False
 
     def update_user(self, user):
@@ -147,7 +158,7 @@ class sql():
         con = self.connect()
         cur = con.cursor()
 
-        if getenv("SYS_SECURETY_LVL") == "SAFE" or getenv("SYS_SECURETY_LVL") == "XSS"  :
+        if getenv("SYS_SECURITY_LVL") == "SAFE" or getenv("SYS_SECURITY_LVL") == "XSS":
             self.rows = cur.execute("insert into clients (client_id, client_first_name, client_last_name, "
                                     "client_phone, client_email) values(%s, %s, %s, %s, %s)", (client.id,
                                                                                                client.first_name,
@@ -167,6 +178,3 @@ class sql():
 
         cur.close()
         con.close()
-
-
-

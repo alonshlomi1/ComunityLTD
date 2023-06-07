@@ -23,7 +23,7 @@ CORS(app)
 @app.route('/login', methods=['POST'])
 def get_current_user():
     data = request.get_json()
-    if getenv("SYS_SECURETY_LVL") != "SAFE":
+    if getenv("SYS_SECURITY_LVL") != "SAFE":
         return login(User(data['email'], data['password']))
     else:
         return login(User(data['email'], bleach.clean(data['password'])))
@@ -32,7 +32,7 @@ def get_current_user():
 @app.route('/submitNewUser', methods=['POST'])
 def add_new_user():
     data = request.get_json()
-    if getenv("SYS_SECURETY_LVL") != "SAFE":
+    if getenv("SYS_SECURITY_LVL") != "SAFE":
         return add_user(User(data['email'], data['password']))
     else:
         return add_user(User(bleach.clean(data['email']), bleach.clean(data['password'])))
@@ -60,7 +60,7 @@ def get_all_clients():
 def add_new_client():
     data = request.get_json()
     #    comment = bleach.clean(request.form.get('comment'))
-    if getenv("SYS_SECURETY_LVL") != "SAFE":
+    if getenv("SYS_SECURITY_LVL") != "SAFE":
         return add_client_unsafe(Client(data['first_name'], data['last_name'], data['phone'], data['email']))
     else:
         return add_client(
