@@ -113,8 +113,8 @@ def password_history_check(email, password):
 
 def verify_password(password):
     # return false if password not valid
-   # if len(password) < PASSWORD_MIN_LEN:
-   #     return False
+    if IS_MIN_LEN and len(password) < PASSWORD_MIN_LEN:
+        return False
     if IS_SMALL_LETTERS and not any(char.islower() for char in password):
         return False
     if IS_BIG_LETTERS and not any(char.isupper() for char in password):
@@ -126,29 +126,18 @@ def verify_password(password):
         return False
     if DICT_CHECK and password_dict_check(password):
         return False
-    return check_sqli(password)  # returns true if ' " < > = not exist else false
+    return True
 
 
 def password_dict_check(password):
-    return False
-
-    base_path = Path(__file__).parent
-    file_path = (base_path / "./names.txt").resolve()
-
+    file_path = ("names.txt")
     with open(file_path, 'r') as f:
-        for line in f.readline().strip():
-            if line == password:
+        for line in f:
+            if line.strip() == password:
                 return True
     return False
 
-def check_sqli(data):
-    return True
-    """
-    string_check = re.compile('''[><'"=]''')
-    if string_check.search(str(data)) is not None or not data:  # for sqli
-        return False
-    return True
-    """
+
 def ok():
     return jsonify({}), 200
 

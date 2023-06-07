@@ -1,0 +1,15 @@
+IS_MIN_LEN = False
+
+PASSWORD_MIN_LEN = 10
+
+IS_SMALL_LETTERS = False
+
+IS_BIG_LETTERS = False
+
+IS_NUMBERS = False
+
+SPECIAL_CHAR = False
+
+DICT_CHECK = True
+
+HISTORY_CHECK = True

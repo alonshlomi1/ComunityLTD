@@ -79,8 +79,6 @@ class sql():
         con = self.connect()
         cur = con.cursor()
 
-        #   mySql_select_query = "select * from users where " + "user_email ='" + user.email + "';"
-        #   self.cur.execute(mySql_select_query)
         self.rows = cur.execute("select * from users where user_email = %s ;", (user.email,))
         rows = cur.fetchall()
         cur.close()
@@ -97,7 +95,6 @@ class sql():
         rows = cur.fetchall()
         cur.close()
         con.close()
-
         for r in rows:
             return False
         return True
