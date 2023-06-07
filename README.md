@@ -1,12 +1,12 @@
 
-### How to Run App:
+## How to Run App:
  - clone the repository on to your local host
  - in src create cert.pem and key.pem using openssl
  - in src create .env
  - open mysql and run the bellow script
  - enable self-signed certificate with the steps bellow
  - run 'python ./controller' on terminal
-
+ 
 ### get self-signed certificate from openssl:
 openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 3650
 
@@ -62,7 +62,6 @@ insert into clients (client_id, client_first_name, client_last_name, client_phon
 insert into clients (client_id, client_first_name, client_last_name, client_phone, client_email) values("123456780", "alon1", "shlomi1","0506666661", "hi1@gmail.com");
 ```
     --      user email- alonasshlomi@gmail.com     user password- 1234
-
 
 
 
