@@ -79,4 +79,6 @@ if __name__ == '__main__':
     Search for the flag called "Allow invalid certificates for resources loaded from localhost."
     Enable this flag by clicking on the "Enable" button.
     Relaunch Google Chrome to apply the changes.
+    
+    openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 3650
     """

@@ -25,10 +25,12 @@ def add_user(user):
     if data:
         return error("Email taken", 409)
     user.salt = os.urandom(32)
-    user.password = hash_password(user.salt, user.password)
-    sql.insertUser(user)
-    return jsonify({'data':{'email': user.email}}), 200
-
+    if verify_password(user.password):
+        user.password = hash_password(user.salt, user.password)
+        sql.insertUser(user)
+        return jsonify({'data':{'email': user.email}}), 200
+    else:
+        return error("Invalid password", 403)
 
 def login(user):
     data = sql.getUserByEmail(user)
@@ -59,11 +61,16 @@ def change_password(user, new_password):
     if not data:
         return error("Unauthorized", 401)
     user_db = User(data[0], data[1], bytes.fromhex(data[2]))
+    old_password = user.password
     if hash_password(user_db.salt, user.password) == user_db.password:
         user.salt = os.urandom(32)
-        user.password = hash_password(user.salt, new_password)
-        sql.update_user(user)
-        return ok()
+        if verify_password(new_password) and password_history_check(user.email, new_password):
+            user.password = hash_password(user.salt, new_password)
+            sql.update_user(user)
+            sql.insert_history(user.email, old_password)
+            return ok()
+        else:
+            return error("Invalid password",403)
     else:
         return error("Unauthorized", 401)
 
@@ -73,37 +80,41 @@ def hash_password(salt, password):
     return key.hex().__str__()
 
 
+def password_history_check(email, password):
+    return sql.valid_password_history(email, password)
+
+
+
 def verify_password(password):
     # return false if password not valid
-    if len(password) < PASSWORD_MIN_LEN:
-        return 1
+   # if len(password) < PASSWORD_MIN_LEN:
+   #     return False
     if IS_SMALL_LETTERS and not any(char.islower() for char in password):
-        return 2
+        return False
     if IS_BIG_LETTERS and not any(char.isupper() for char in password):
-        return 3
+        return False
     if IS_NUMBERS and not bool(re.search(r'\d', password)):
-        return 4
+        return False
     spacial_chars = ['@', '_', '!', '#', '$', '%', '^', '&', '*', '(', ')', '?', '/', '|', '}', '{', '~', ':']
     if SPECIAL_CHAR and not any((char in spacial_chars) for char in password):  # special character
-        return 5
-
+        return False
     if password_dict_check(password):
         return False
     return check_sqli(password)  # returns true if ' " < > = not exist else false
 
 
 def password_dict_check(password):
-    return True
-    """ 
+    return False
+
     base_path = Path(__file__).parent
-    file_path = (base_path / "./realhuman_phill.txt").resolve()
+    file_path = (base_path / "./names.txt").resolve()
 
     with open(file_path, 'r') as f:
         for line in f.readline().strip():
             if line == password:
                 return True
     return False
-    """
+
 def check_sqli(data):
     return True
     """

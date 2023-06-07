@@ -26,6 +26,11 @@ class sql():
                                      (user.email, user.password, user.salt.hex()))
         self.con.commit()
 
+    def insert_history(self, email, password):
+        self.rows = self.cur.execute("insert into users_history (user_email, user_password) values(%s, %s)",
+                                     (email, password))
+        self.con.commit()
+
     def isValidUser(self, user):
      #   mySql_select_query = "select * from users where " + "user_email ='" + user.email + "';"
      #   self.cur.execute(mySql_select_query)
@@ -34,6 +39,13 @@ class sql():
         for r in rows:
             return True
         return False
+
+    def valid_password_history(self,  email, password):
+        self.rows = self.cur.execute("select * from users_history where user_email = %s and user_password = %s;", (email, password))
+        rows = self.cur.fetchall()
+        for r in rows:
+            return False
+        return True
 
     def getUserByEmail(self, user):
         #mySql_select_query = "select * from users where " + "user_email ='" + user.email + "';"
