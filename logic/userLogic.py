@@ -42,7 +42,7 @@ def login(user):
         tries = sql.get_login_tries(user.email)#[1]
         print(tries)
         if tries:
-            if tries[1] < 3:
+            if tries[1] < MAX_NUM_LOGIN_TRIES:
                 sql.update_login_tries(user.email, tries[1] + 1)
             else:
                 return error("Unauthorized - blocked", 401)
