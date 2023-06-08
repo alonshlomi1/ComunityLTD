@@ -100,7 +100,14 @@ aa'); Drop table users_history; --
 
  - watch users_history dropped in the DataBase
 
-
+### Dependencies:
+Flask                  2.3.2
+Flask-Cors             3.0.10
+Flask-SSLify           0.1.5
+bleach                 6.0.0
+mysql-connector-python 8.0.33
+pip                    23.1.2
+python-dotenv          1.0.0
 
 ### bleach.clean():
 The bleach.clean() function is a part of the bleach library,which is used for sanitizing and cleaning

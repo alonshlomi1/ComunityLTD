@@ -6,6 +6,6 @@ class User:
         if password:
             self.password = password
         else:
-            # TODO: gen new passwod
-            self.password = "try"
+            # default
+            self.password = "1234567890"
         self.salt = salt

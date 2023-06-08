@@ -1,8 +1,6 @@
 import mysql.connector
 from logic.client import Client
-from con_data import *
 from os import getenv
-
 from dotenv import load_dotenv
 
 load_dotenv()

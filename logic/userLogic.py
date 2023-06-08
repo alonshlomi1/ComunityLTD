@@ -1,6 +1,6 @@
 import hashlib
-import time
-
+import random
+import string
 from logic import send_email
 import os
 import re
@@ -72,8 +72,7 @@ def forget_password(user):
     data = sql.getUserByEmail(user)
     if data is None:
         return error("Unauthorized", 401)
-    # TODO: gen random pass and use SHA-1
-    new_pass = "1234567890"
+    new_pass = generate_password()
     sha1_hash = hashlib.sha1(new_pass.encode()).hexdigest()
     send_email.send_new_password_email(user.email, sha1_hash)
     user.salt = os.urandom(32)
@@ -139,6 +138,26 @@ def password_dict_check(password):
                 return True
     return False
 
+
+def generate_password():
+    spacial_chars = ['@', '_', '!', '#', '$', '%', '^', '&', '*', '(', ')', '?', '/', '|', '}', '{', '~', ':']
+    # Generate a password with at least one uppercase letter, one lowercase letter, one digit, one special character
+    password = ''
+    password += random.choice(string.ascii_uppercase)  # Add one uppercase letter
+    password += random.choice(string.ascii_lowercase)  # Add one lowercase letter
+    password += random.choice(string.digits)  # Add one digit
+    password += random.choice(spacial_chars)  # Add one special character
+
+    # Generate remaining characters for the password
+    remaining_length = PASSWORD_MIN_LEN - len(password)
+    password += ''.join(random.choices(string.ascii_letters + string.digits + ''.join(spacial_chars), k=remaining_length))
+
+    # Shuffle the characters of the password to make it random
+    password_list = list(password)
+    random.shuffle(password_list)
+    password = ''.join(password_list)
+
+    return password
 
 def ok():
     return jsonify({}), 200

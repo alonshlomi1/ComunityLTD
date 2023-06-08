@@ -1,14 +1,10 @@
 import ssl
-import sys
-
 from flask import Flask, request
 from flask_sslify import SSLify
-
 from logic.client import Client
 from logic.userLogic import *
 from logic.clientLogic import *
 from flask_cors import CORS
-from OpenSSL import SSL
 import bleach
 from dotenv import load_dotenv
 from os import getenv
@@ -69,8 +65,6 @@ def add_new_client():
 
 
 if __name__ == '__main__':
-
-    #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     context.minimum_version = ssl.TLSVersion.TLSv1_2
     context.maximum_version = ssl.TLSVersion.TLSv1_3
@@ -80,3 +74,4 @@ if __name__ == '__main__':
 
 
 
+    #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
